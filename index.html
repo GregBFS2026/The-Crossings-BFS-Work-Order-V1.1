@@ -5,6 +5,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <meta name="theme-color" content="#0b2b67" />
   <title>The Crossings - BFS Work Order</title>
+
   <style>
     :root {
       --navy: #0b2b67;
@@ -14,7 +15,9 @@
       --text: #1d2430;
     }
 
-    * { box-sizing: border-box; }
+    * {
+      box-sizing: border-box;
+    }
 
     body {
       margin: 0;
@@ -28,7 +31,7 @@
       margin: 0 auto;
       min-height: 100vh;
       background: #fff;
-      box-shadow: 0 0 28px rgba(0,0,0,.08);
+      box-shadow: 0 0 28px rgba(0, 0, 0, 0.08);
     }
 
     header {
@@ -80,14 +83,16 @@
     }
 
     @media (min-width: 640px) {
-      .grid.two { grid-template-columns: 1fr 1fr; }
+      .grid.two {
+        grid-template-columns: 1fr 1fr;
+      }
     }
 
     label {
       display: block;
       margin-bottom: 7px;
       font-weight: 700;
-      font-size: .95rem;
+      font-size: 0.95rem;
     }
 
     input[type="text"],
@@ -109,7 +114,7 @@
 
     .choice-grid {
       display: grid;
-      grid-template-columns: repeat(2, minmax(0,1fr));
+      grid-template-columns: repeat(2, minmax(0, 1fr));
       gap: 10px;
     }
 
@@ -140,14 +145,26 @@
 
     .photo-box input {
       width: 100%;
-      margin-top: 10px;
+      margin-top: 12px;
     }
 
     .preview-list {
       margin-top: 12px;
-      font-size: .9rem;
+      font-size: 0.9rem;
+      line-height: 1.5;
       color: #4b5563;
       text-align: left;
+      overflow-wrap: anywhere;
+    }
+
+    .photo-reminder {
+      margin: 0 0 14px;
+      padding: 12px;
+      border: 1px solid #d8c36b;
+      border-radius: 10px;
+      background: #fff8e6;
+      font-size: 0.9rem;
+      line-height: 1.4;
     }
 
     .submit-btn {
@@ -162,11 +179,13 @@
       cursor: pointer;
     }
 
-    .submit-btn:hover { opacity: .93; }
+    .submit-btn:hover {
+      opacity: 0.93;
+    }
 
     .note {
       margin-top: 12px;
-      font-size: .85rem;
+      font-size: 0.85rem;
       line-height: 1.4;
       color: #657080;
     }
@@ -186,40 +205,64 @@
       padding: 0 22px 28px;
       text-align: center;
       color: #7a8493;
-      font-size: .82rem;
+      font-size: 0.82rem;
     }
   </style>
 </head>
+
 <body>
   <main class="app-shell">
     <header>
-      <img src="bfs-logo.png" alt="Business Flooring Specialists logo" />
+      <img
+        src="bfs-logo.png"
+        alt="Business Flooring Specialists logo"
+      />
+
       <h1>The Crossings</h1>
       <p>Customer Flooring Work Order</p>
     </header>
 
-    <div id="status" class="status">Your email app is opening with the completed work order.</div>
+    <div id="status" class="status">
+      Your email app is opening with the completed work order.
+    </div>
 
     <form id="workOrderForm">
       <section class="section">
         <h2>Unit Information</h2>
+
         <div class="grid two">
           <div>
             <label for="unitNumber">Unit Number *</label>
-            <input id="unitNumber" name="unitNumber" type="number" inputmode="numeric" required />
+
+            <input
+              id="unitNumber"
+              name="unitNumber"
+              type="number"
+              inputmode="numeric"
+              required
+            />
           </div>
+
           <div>
             <label for="unitStyle">Unit Style</label>
-            <input id="unitStyle" name="unitStyle" type="text" placeholder="Example: 1 bedroom" />
+
+            <input
+              id="unitStyle"
+              name="unitStyle"
+              type="text"
+              placeholder="Example: 1 bedroom"
+            />
           </div>
         </div>
       </section>
 
       <section class="section">
         <h2>Flooring Selections</h2>
+
         <div class="grid two">
           <div>
             <label for="occupancy">Occupancy Status *</label>
+
             <select id="occupancy" required>
               <option value="">Select status</option>
               <option>Vacant</option>
@@ -229,6 +272,7 @@
 
           <div>
             <label for="lvtColor">LVT Color *</label>
+
             <select id="lvtColor" required>
               <option value="">Select LVT color</option>
               <option>Thatch</option>
@@ -238,6 +282,7 @@
 
           <div>
             <label for="carpetColor">Carpet Color *</label>
+
             <select id="carpetColor" required>
               <option value="">Select carpet color</option>
               <option>Sand</option>
@@ -249,77 +294,148 @@
 
       <section class="section">
         <h2>Demolition Required</h2>
+
         <div class="choice-grid">
-          <label class="choice"><input type="checkbox" name="demo" value="LVT" /> LVT</label>
-          <label class="choice"><input type="checkbox" name="demo" value="Carpet & Pad" /> Carpet & Pad</label>
-          <label class="choice"><input type="checkbox" name="demo" value="Other" /> Other</label>
+          <label class="choice">
+            <input
+              type="checkbox"
+              name="demo"
+              value="LVT"
+            />
+            LVT
+          </label>
+
+          <label class="choice">
+            <input
+              type="checkbox"
+              name="demo"
+              value="Carpet & Pad"
+            />
+            Carpet &amp; Pad
+          </label>
+
+          <label class="choice">
+            <input
+              type="checkbox"
+              name="demo"
+              value="Other"
+            />
+            Other
+          </label>
         </div>
-        <div style="margin-top:14px;">
+
+        <div style="margin-top: 14px;">
           <label for="demoLocation">Demo Location in Unit</label>
-          <textarea id="demoLocation" placeholder="List the rooms or areas"></textarea>
+
+          <textarea
+            id="demoLocation"
+            placeholder="List the rooms or areas"
+          ></textarea>
         </div>
       </section>
 
       <section class="section">
         <h2>Installation Locations</h2>
+
         <div class="grid two">
           <div>
             <label for="installClosets">Closet(s)</label>
-            <select id="installClosets" class="install-location" data-location="Closet(s)">
+
+            <select
+              id="installClosets"
+              class="install-location"
+              data-location="Closet(s)"
+            >
               <option value="">None</option>
               <option>LVT</option>
               <option>Carpet</option>
               <option>Both</option>
             </select>
           </div>
+
           <div>
             <label for="installBathrooms">Bathroom(s)</label>
-            <select id="installBathrooms" class="install-location" data-location="Bathroom(s)">
+
+            <select
+              id="installBathrooms"
+              class="install-location"
+              data-location="Bathroom(s)"
+            >
               <option value="">None</option>
               <option>LVT</option>
               <option>Carpet</option>
               <option>Both</option>
             </select>
           </div>
+
           <div>
             <label for="installLiving">Living Room</label>
-            <select id="installLiving" class="install-location" data-location="Living Room">
+
+            <select
+              id="installLiving"
+              class="install-location"
+              data-location="Living Room"
+            >
               <option value="">None</option>
               <option>LVT</option>
               <option>Carpet</option>
               <option>Both</option>
             </select>
           </div>
+
           <div>
             <label for="installBedrooms">Bedroom(s)</label>
-            <select id="installBedrooms" class="install-location" data-location="Bedroom(s)">
+
+            <select
+              id="installBedrooms"
+              class="install-location"
+              data-location="Bedroom(s)"
+            >
               <option value="">None</option>
               <option>LVT</option>
               <option>Carpet</option>
               <option>Both</option>
             </select>
           </div>
+
           <div>
             <label for="installKitchen">Kitchen</label>
-            <select id="installKitchen" class="install-location" data-location="Kitchen">
+
+            <select
+              id="installKitchen"
+              class="install-location"
+              data-location="Kitchen"
+            >
               <option value="">None</option>
               <option>LVT</option>
               <option>Carpet</option>
               <option>Both</option>
             </select>
           </div>
+
           <div>
             <label for="installDining">Dining</label>
-            <select id="installDining" class="install-location" data-location="Dining">
+
+            <select
+              id="installDining"
+              class="install-location"
+              data-location="Dining"
+            >
               <option value="">None</option>
               <option>LVT</option>
               <option>Carpet</option>
               <option>Both</option>
             </select>
           </div>
+
           <div>
             <label for="installLaundry">Laundry</label>
-            <select id="installLaundry" class="install-location" data-location="Laundry">
+
+            <select
+              id="installLaundry"
+              class="install-location"
+              data-location="Laundry"
+            >
               <option value="">None</option>
               <option>LVT</option>
               <option>Carpet</option>
@@ -331,94 +447,192 @@
 
       <section class="section">
         <h2>Additional Information</h2>
+
         <div>
-          <label class="choice" style="margin-bottom:16px;">
-            <input type="checkbox" id="stretchOnly" /> Carpet Stretch Only
+          <label
+            class="choice"
+            style="margin-bottom: 16px;"
+          >
+            <input
+              type="checkbox"
+              id="stretchOnly"
+            />
+            Carpet Stretch Only
           </label>
         </div>
 
         <label for="instructions">Special Instructions</label>
-        <textarea id="instructions" placeholder="Enter any special instructions"></textarea>
 
-        <div class="photo-box" style="margin-top:16px;">
+        <textarea
+          id="instructions"
+          placeholder="Enter any special instructions"
+        ></textarea>
+
+        <div
+          class="photo-box"
+          style="margin-top: 16px;"
+        >
           <strong>Add Photos</strong>
-          <div>Take pictures or choose them from the phone.</div>
-          <input id="photos" type="file" accept="image/*" capture="environment" multiple />
-          <div id="previewList" class="preview-list"></div>
+
+          <div style="margin-top: 7px;">
+            Take a new photo or choose existing photos from your phone.
+          </div>
+
+          <input
+            id="photos"
+            type="file"
+            accept="image/*"
+            multiple
+          />
+
+          <div
+            id="previewList"
+            class="preview-list"
+          >
+            No photos selected.
+          </div>
         </div>
       </section>
 
-      <button type="submit" class="submit-btn">Submit Work Order</button>
+      <div class="photo-reminder">
+        <strong>📎 Photo Reminder</strong><br />
+        If photos were selected, attach them to the email before pressing
+        <strong>Send</strong>.
+      </div>
+
+      <button
+        type="submit"
+        class="submit-btn"
+      >
+        Submit Work Order
+      </button>
+
       <p class="note">
-        Prototype submission opens the phone's email app and prepares an email to
-        gregcarrillo@bfsflooring.com. Photo attachments cannot be added automatically in this
-        prototype; the user can attach them from the email app. The production version can save
-        records and photos automatically after a secure form service is connected.
+        Submission opens the phone's email app and prepares an email to
+        gregcarrillo@bfsflooring.com. Photos cannot be attached automatically,
+        so the user must attach the selected photos from the email app before
+        sending.
       </p>
     </form>
 
-    <footer>Business Flooring Specialists</footer>
+    <footer>
+      Business Flooring Specialists
+    </footer>
   </main>
 
   <script>
-    const form = document.getElementById('workOrderForm');
-    const photos = document.getElementById('photos');
-    const previewList = document.getElementById('previewList');
-    const statusBox = document.getElementById('status');
+    const form = document.getElementById("workOrderForm");
+    const photos = document.getElementById("photos");
+    const previewList = document.getElementById("previewList");
+    const statusBox = document.getElementById("status");
 
-    const checkedValues = (name) =>
-      [...document.querySelectorAll(`input[name="${name}"]:checked`)]
-        .map(el => el.value)
-        .join(', ') || 'None selected';
+    const checkedValues = (name) => {
+      const values = [
+        ...document.querySelectorAll(
+          `input[name="${name}"]:checked`
+        )
+      ]
+        .map((element) => element.value)
+        .join(", ");
 
-    const installationSelections = () => {
-      const selections = [...document.querySelectorAll('.install-location')]
-        .filter(el => el.value)
-        .map(el => `${el.dataset.location}: ${el.value}`);
-      return selections.length ? selections.join('\n') : 'None selected';
+      return values || "None selected";
     };
 
-    photos.addEventListener('change', () => {
-      if (!photos.files.length) {
-        previewList.textContent = '';
+    const installationSelections = () => {
+      const selections = [
+        ...document.querySelectorAll(".install-location")
+      ]
+        .filter((element) => element.value)
+        .map(
+          (element) =>
+            `${element.dataset.location}: ${element.value}`
+        );
+
+      return selections.length
+        ? selections.join("\n")
+        : "None selected";
+    };
+
+    photos.addEventListener("change", () => {
+      const selectedFiles = [...photos.files];
+
+      if (!selectedFiles.length) {
+        previewList.textContent = "No photos selected.";
         return;
       }
-      previewList.innerHTML = '<strong>Selected:</strong><br>' +
-        [...photos.files].map(file => file.name).join('<br>');
+
+      const countText =
+        selectedFiles.length === 1
+          ? "1 photo selected"
+          : `${selectedFiles.length} photos selected`;
+
+      previewList.innerHTML =
+        `<strong>${countText}:</strong><br>` +
+        selectedFiles
+          .map((file) => `✓ ${file.name}`)
+          .join("<br>") +
+        "<br><br><strong>Reminder:</strong> Attach these photos when the email opens.";
     });
 
-    form.addEventListener('submit', (event) => {
+    form.addEventListener("submit", (event) => {
       event.preventDefault();
 
-      if (!form.reportValidity()) return;
+      if (!form.reportValidity()) {
+        return;
+      }
 
-      const unit = document.getElementById('unitNumber').value;
-      const subject = `The Crossings Work Order - Unit ${unit}`;
+      const unit =
+        document.getElementById("unitNumber").value;
+
+      const subject =
+        `The Crossings Work Order - Unit ${unit}`;
 
       const body = [
-        'THE CROSSINGS - CUSTOMER FLOORING WORK ORDER',
-        '',
+        "THE CROSSINGS - CUSTOMER FLOORING WORK ORDER",
+        "",
         `Unit Number: ${unit}`,
-        `Unit Style: ${document.getElementById('unitStyle').value || 'Not provided'}`,
-        `Occupancy Status: ${document.getElementById('occupancy').value}`,
-        `LVT Color: ${document.getElementById('lvtColor').value}`,
-        `Carpet Color: ${document.getElementById('carpetColor').value}`,
-        '',
-        `Demolition Required: ${checkedValues('demo')}`,
-        `Demo Location: ${document.getElementById('demoLocation').value || 'Not provided'}`,
-        '',
+        `Unit Style: ${
+          document.getElementById("unitStyle").value ||
+          "Not provided"
+        }`,
+        `Occupancy Status: ${
+          document.getElementById("occupancy").value
+        }`,
+        `LVT Color: ${
+          document.getElementById("lvtColor").value
+        }`,
+        `Carpet Color: ${
+          document.getElementById("carpetColor").value
+        }`,
+        "",
+        `Demolition Required: ${checkedValues("demo")}`,
+        `Demo Location: ${
+          document.getElementById("demoLocation").value ||
+          "Not provided"
+        }`,
+        "",
         `Installation Locations:\n${installationSelections()}`,
-        `Carpet Stretch Only: ${document.getElementById('stretchOnly').checked ? 'Yes' : 'No'}`,
-        '',
-        `Special Instructions: ${document.getElementById('instructions').value || 'None'}`,
-        '',
+        `Carpet Stretch Only: ${
+          document.getElementById("stretchOnly").checked
+            ? "Yes"
+            : "No"
+        }`,
+        "",
+        `Special Instructions: ${
+          document.getElementById("instructions").value ||
+          "None"
+        }`,
+        "",
         `Photos selected: ${photos.files.length}`,
-        'Please attach any selected photos before sending.'
-      ].join('\n');
+        "Please attach any selected photos before sending."
+      ].join("\n");
 
-      statusBox.style.display = 'block';
+      statusBox.style.display = "block";
+
       window.location.href =
-        `mailto:gregcarrillo@bfsflooring.com?subject=${encodeURIComponent(subject)}&body=${encodeURIComponent(body)}`;
+        "mailto:gregcarrillo@bfsflooring.com" +
+        `?subject=${encodeURIComponent(subject)}` +
+        `&body=${encodeURIComponent(body)}`;
     });
   </script>
 </body>
