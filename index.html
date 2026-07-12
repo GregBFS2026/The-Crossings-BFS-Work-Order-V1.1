@@ -5,118 +5,838 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <meta name="theme-color" content="#0b2b67" />
   <title>The Crossings - BFS Work Order</title>
+
   <style>
-    :root{--navy:#0b2b67;--olive:#8a9427;--light:#f4f6fa;--border:#d6dce6;--text:#1f2937;--muted:#667085;--white:#fff;--danger:#b42318}
-    *{box-sizing:border-box} body{margin:0;font-family:Arial,Helvetica,sans-serif;background:var(--light);color:var(--text)}
-    .app{max-width:760px;margin:0 auto;min-height:100vh;background:var(--white);box-shadow:0 0 26px rgba(0,0,0,.08)}
-    .header{text-align:center;padding:24px 20px 18px;border-bottom:6px solid var(--olive)}
-    .header img{width:220px;max-width:85%;height:auto;display:block;margin:0 auto 14px}
-    .header h1{margin:0;color:var(--navy);font-size:1.8rem}.header p{margin:6px 0 0;color:var(--muted)}
-    form{padding:22px}.section{margin-bottom:22px;padding:18px;border:1px solid var(--border);border-radius:14px;background:var(--white)}
-    .section h2{margin:0 0 16px;font-size:1.15rem;color:var(--navy)}
-    .grid{display:grid;grid-template-columns:1fr;gap:16px}@media(min-width:640px){.grid.two{grid-template-columns:1fr 1fr}}
-    label{display:block;margin-bottom:7px;font-weight:700;font-size:.95rem}
-    input[type="text"],input[type="number"],select,textarea{width:100%;padding:13px 12px;border:1px solid #b8c1cf;border-radius:10px;font-size:16px;background:var(--white)}
-    textarea{min-height:110px;resize:vertical}.required{color:var(--danger)}
-    .choice-list{display:grid;gap:10px}.choice-card{display:flex;align-items:center;gap:10px;padding:13px;border:1px solid var(--border);border-radius:10px;background:#fafbfe;cursor:pointer}
-    .choice-card input{width:20px;height:20px;accent-color:var(--navy);flex:0 0 auto}.choice-text strong{display:block;color:var(--navy)}
-    .choice-text span{display:block;margin-top:2px;font-size:.88rem;color:var(--muted);font-weight:400}
-    .checkbox-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:10px}
-    .checkbox-card{display:flex;align-items:center;gap:9px;padding:12px;border:1px solid var(--border);border-radius:10px;background:#fafbfe;font-weight:700;cursor:pointer}
-    .checkbox-card input{width:20px;height:20px;accent-color:var(--navy)}
-    .photo-grid{display:grid;grid-template-columns:1fr;gap:12px}@media(min-width:560px){.photo-grid{grid-template-columns:1fr 1fr}}
-    .photo-button{position:relative;overflow:hidden;border:1px solid #b8c1cf;border-radius:12px;background:#fafbfe;min-height:95px;display:flex;align-items:center;justify-content:center;text-align:center;padding:16px;font-weight:700;color:var(--navy);cursor:pointer}
-    .photo-button input{position:absolute;inset:0;opacity:0;cursor:pointer}
-    .photo-status{margin-top:12px;padding:12px;border-radius:10px;background:#f2f4f7;color:var(--muted);font-size:.9rem;line-height:1.4}
-    .submit-btn{width:100%;padding:16px;border:0;border-radius:12px;background:var(--navy);color:var(--white);font-size:1.08rem;font-weight:700;cursor:pointer}
-    .submit-btn:hover{opacity:.93}.note{margin-top:12px;color:var(--muted);font-size:.86rem;line-height:1.45}
-    .success{display:none;margin:18px 22px 0;padding:14px;border:1px solid #a6d7ad;border-radius:10px;background:#edf8ef;color:#1f6b2c;font-weight:700}
-    footer{padding:0 22px 28px;text-align:center;color:#7a8493;font-size:.82rem}
+    :root {
+      --navy: #0b2b67;
+      --navy-dark: #071f4c;
+      --olive: #8a9427;
+      --page: #f4f6f9;
+      --card: #ffffff;
+      --border: #d7deea;
+      --text: #172033;
+      --muted: #667085;
+      --danger: #b42318;
+      --success-bg: #edf8ef;
+      --success-border: #a8d7ae;
+      --success-text: #21652c;
+      --shadow: 0 10px 28px rgba(15, 34, 67, 0.08);
+    }
+
+    * {
+      box-sizing: border-box;
+    }
+
+    html {
+      scroll-behavior: smooth;
+    }
+
+    body {
+      margin: 0;
+      font-family: Arial, Helvetica, sans-serif;
+      background: var(--page);
+      color: var(--text);
+    }
+
+    button,
+    input,
+    select,
+    textarea {
+      font: inherit;
+    }
+
+    .app-shell {
+      width: min(100%, 980px);
+      margin: 0 auto;
+      min-height: 100vh;
+      background: var(--page);
+    }
+
+    .hero {
+      margin: 0;
+      padding: 28px 20px 30px;
+      background: linear-gradient(180deg, var(--navy-dark), var(--navy));
+      border-bottom: 7px solid var(--olive);
+      text-align: center;
+      color: white;
+    }
+
+    .logo-box {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      padding: 14px 18px;
+      background: white;
+      border-radius: 15px;
+      box-shadow: 0 8px 20px rgba(0, 0, 0, 0.12);
+    }
+
+    .logo-box img {
+      width: 270px;
+      max-width: 78vw;
+      height: auto;
+      display: block;
+    }
+
+    .hero h1 {
+      margin: 18px 0 5px;
+      font-size: clamp(2rem, 6vw, 3rem);
+      line-height: 1.05;
+    }
+
+    .hero p {
+      margin: 0;
+      font-size: clamp(1rem, 3vw, 1.2rem);
+      opacity: 0.95;
+    }
+
+    .intro {
+      margin: 22px auto 18px;
+      padding: 0 20px;
+      text-align: center;
+      color: var(--muted);
+      line-height: 1.5;
+    }
+
+    .form-wrap {
+      padding: 0 18px 28px;
+    }
+
+    .section-card {
+      margin-bottom: 20px;
+      padding: 22px;
+      background: var(--card);
+      border: 1px solid var(--border);
+      border-radius: 20px;
+      box-shadow: var(--shadow);
+    }
+
+    .section-title {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      margin-bottom: 18px;
+    }
+
+    .step-number {
+      width: 40px;
+      height: 40px;
+      flex: 0 0 40px;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      border-radius: 50%;
+      background: var(--olive);
+      color: white;
+      font-weight: 800;
+      font-size: 1.05rem;
+    }
+
+    .section-title h2 {
+      margin: 0;
+      color: var(--navy);
+      font-size: 1.35rem;
+    }
+
+    .section-subtitle {
+      margin: -6px 0 16px 52px;
+      color: var(--muted);
+      font-size: 0.92rem;
+    }
+
+    .grid {
+      display: grid;
+      grid-template-columns: 1fr;
+      gap: 16px;
+    }
+
+    .grid.two {
+      grid-template-columns: 1fr;
+    }
+
+    @media (min-width: 700px) {
+      .grid.two {
+        grid-template-columns: 1fr 1fr;
+      }
+    }
+
+    .field label,
+    .group-label {
+      display: block;
+      margin-bottom: 8px;
+      font-weight: 700;
+      color: var(--text);
+    }
+
+    .required {
+      color: var(--danger);
+    }
+
+    input[type="text"],
+    input[type="number"],
+    input[type="date"],
+    select,
+    textarea {
+      width: 100%;
+      min-height: 50px;
+      padding: 13px 14px;
+      border: 1px solid #bac4d3;
+      border-radius: 12px;
+      background: white;
+      color: var(--text);
+      font-size: 16px;
+      outline: none;
+      transition: border-color 0.2s, box-shadow 0.2s;
+    }
+
+    textarea {
+      min-height: 120px;
+      resize: vertical;
+    }
+
+    input:focus,
+    select:focus,
+    textarea:focus {
+      border-color: var(--navy);
+      box-shadow: 0 0 0 3px rgba(11, 43, 103, 0.12);
+    }
+
+    .choice-grid {
+      display: grid;
+      grid-template-columns: 1fr;
+      gap: 12px;
+    }
+
+    @media (min-width: 650px) {
+      .choice-grid.two {
+        grid-template-columns: 1fr 1fr;
+      }
+    }
+
+    .choice-card {
+      position: relative;
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      min-height: 64px;
+      padding: 15px 16px;
+      border: 1px solid var(--border);
+      border-radius: 14px;
+      background: #fbfcfe;
+      cursor: pointer;
+      transition: border-color 0.2s, background 0.2s, transform 0.2s;
+    }
+
+    .choice-card:hover {
+      transform: translateY(-1px);
+      border-color: #aab6c7;
+    }
+
+    .choice-card:has(input:checked) {
+      border-color: var(--navy);
+      background: #f0f5ff;
+      box-shadow: 0 0 0 2px rgba(11, 43, 103, 0.08);
+    }
+
+    .choice-card input {
+      width: 21px;
+      height: 21px;
+      flex: 0 0 auto;
+      accent-color: var(--navy);
+    }
+
+    .choice-copy strong {
+      display: block;
+      color: var(--navy);
+      font-size: 1rem;
+    }
+
+    .choice-copy span {
+      display: block;
+      margin-top: 3px;
+      color: var(--muted);
+      font-size: 0.88rem;
+      font-weight: 400;
+    }
+
+    .demo-options {
+      display: grid;
+      grid-template-columns: 1fr;
+      gap: 10px;
+      margin-bottom: 16px;
+    }
+
+    @media (min-width: 640px) {
+      .demo-options {
+        grid-template-columns: repeat(3, 1fr);
+      }
+    }
+
+    .room-grid {
+      display: grid;
+      grid-template-columns: 1fr;
+      gap: 16px;
+    }
+
+    @media (min-width: 700px) {
+      .room-grid {
+        grid-template-columns: repeat(2, 1fr);
+      }
+    }
+
+    .photo-grid {
+      display: grid;
+      grid-template-columns: 1fr;
+      gap: 14px;
+    }
+
+    @media (min-width: 650px) {
+      .photo-grid {
+        grid-template-columns: 1fr 1fr;
+      }
+    }
+
+    .photo-card {
+      position: relative;
+      min-height: 110px;
+      border: 1px solid #b9c4d3;
+      border-radius: 15px;
+      background: #fbfcfe;
+      overflow: hidden;
+      cursor: pointer;
+    }
+
+    .photo-card input {
+      position: absolute;
+      inset: 0;
+      width: 100%;
+      height: 100%;
+      opacity: 0;
+      cursor: pointer;
+    }
+
+    .photo-card-content {
+      min-height: 110px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+      padding: 18px;
+      text-align: center;
+      color: var(--navy);
+      font-weight: 800;
+    }
+
+    .photo-card-content span {
+      font-size: 1.7rem;
+    }
+
+    .photo-status {
+      margin-top: 14px;
+      padding: 13px 14px;
+      border-radius: 12px;
+      background: #f2f4f7;
+      color: var(--muted);
+      font-size: 0.9rem;
+      line-height: 1.45;
+    }
+
+    .review-card {
+      display: none;
+      margin-bottom: 20px;
+      padding: 22px;
+      background: #fffdf5;
+      border: 1px solid #d7cc8a;
+      border-radius: 18px;
+      box-shadow: var(--shadow);
+    }
+
+    .review-card h3 {
+      margin: 0 0 12px;
+      color: var(--navy);
+    }
+
+    .review-content {
+      white-space: pre-wrap;
+      line-height: 1.55;
+      color: var(--text);
+    }
+
+    .action-row {
+      display: grid;
+      grid-template-columns: 1fr;
+      gap: 12px;
+      margin-top: 10px;
+    }
+
+    @media (min-width: 650px) {
+      .action-row {
+        grid-template-columns: 1fr 1fr;
+      }
+    }
+
+    .btn {
+      min-height: 54px;
+      border: 0;
+      border-radius: 13px;
+      padding: 14px 18px;
+      font-weight: 800;
+      font-size: 1rem;
+      cursor: pointer;
+      transition: opacity 0.2s, transform 0.2s;
+    }
+
+    .btn:hover {
+      opacity: 0.94;
+      transform: translateY(-1px);
+    }
+
+    .btn-primary {
+      background: var(--navy);
+      color: white;
+    }
+
+    .btn-secondary {
+      background: white;
+      color: var(--navy);
+      border: 1px solid var(--navy);
+    }
+
+    .status-message {
+      display: none;
+      margin-bottom: 20px;
+      padding: 15px 16px;
+      border: 1px solid var(--success-border);
+      border-radius: 13px;
+      background: var(--success-bg);
+      color: var(--success-text);
+      font-weight: 700;
+      line-height: 1.45;
+    }
+
+    .footer-note {
+      margin: 14px 0 0;
+      color: var(--muted);
+      font-size: 0.86rem;
+      line-height: 1.45;
+      text-align: center;
+    }
+
+    footer {
+      padding: 0 18px 30px;
+      text-align: center;
+      color: #7b8492;
+      font-size: 0.82rem;
+    }
   </style>
 </head>
+
 <body>
-  <main class="app">
-    <header class="header">
-      <img src="bfs-logo.png" alt="Business Flooring Specialists logo" />
+  <main class="app-shell">
+    <header class="hero">
+      <div class="logo-box">
+        <img src="bfs-logo.png" alt="Business Flooring Specialists logo" />
+      </div>
       <h1>The Crossings</h1>
-      <p>Customer Flooring Work Order</p>
+      <p>Flooring Work Order Request</p>
     </header>
-    <div id="successMessage" class="success">Your email app is opening with the completed work order.</div>
-    <form id="workOrderForm">
-      <section class="section">
-        <h2>Unit Information</h2>
-        <div class="grid two">
-          <div><label for="unitNumber">Unit Number <span class="required">*</span></label><input id="unitNumber" type="number" inputmode="numeric" required /></div>
-          <div><label for="unitStyle">Unit Style</label><input id="unitStyle" type="text" placeholder="Example: 1 Bedroom" /></div>
-          <div><label for="occupancy">Occupancy Status <span class="required">*</span></label><select id="occupancy" required><option value="">Select status</option><option value="Vacant">Vacant</option><option value="Occupied">Occupied</option></select></div>
+
+    <p class="intro">
+      Complete the information below and submit the work order to Business Flooring Specialists.
+    </p>
+
+    <div class="form-wrap">
+      <div id="statusMessage" class="status-message">
+        Your email app is opening with the completed work order.
+      </div>
+
+      <form id="workOrderForm">
+        <section class="section-card">
+          <div class="section-title">
+            <span class="step-number">1</span>
+            <h2>Unit Information</h2>
+          </div>
+
+          <div class="grid two">
+            <div class="field">
+              <label for="unitNumber">Unit Number <span class="required">*</span></label>
+              <input id="unitNumber" type="number" inputmode="numeric" placeholder="Example: 101" required />
+            </div>
+
+            <div class="field">
+              <label for="unitStyle">Unit Style <span class="required">*</span></label>
+              <input id="unitStyle" type="text" placeholder="Example: A1" required />
+            </div>
+
+            <div class="field">
+              <label for="requestDate">Request Date <span class="required">*</span></label>
+              <input id="requestDate" type="date" required />
+            </div>
+
+            <div class="field">
+              <label for="occupancy">Unit Status <span class="required">*</span></label>
+              <select id="occupancy" required>
+                <option value="">Select status</option>
+                <option value="Vacant">Vacant</option>
+                <option value="Occupied">Occupied</option>
+              </select>
+            </div>
+          </div>
+        </section>
+
+        <section class="section-card">
+          <div class="section-title">
+            <span class="step-number">2</span>
+            <h2>Flooring Colors</h2>
+          </div>
+
+          <div class="field" style="margin-bottom: 18px;">
+            <span class="group-label">LVT Color <span class="required">*</span></span>
+            <div class="choice-grid two">
+              <label class="choice-card">
+                <input type="radio" name="lvtColor" value="Thatch - Lighter" required />
+                <span class="choice-copy">
+                  <strong>Thatch</strong>
+                  <span>Lighter</span>
+                </span>
+              </label>
+
+              <label class="choice-card">
+                <input type="radio" name="lvtColor" value="Thicket - Darker" required />
+                <span class="choice-copy">
+                  <strong>Thicket</strong>
+                  <span>Darker</span>
+                </span>
+              </label>
+            </div>
+          </div>
+
+          <div class="field">
+            <span class="group-label">Carpet Color <span class="required">*</span></span>
+            <div class="choice-grid two">
+              <label class="choice-card">
+                <input type="radio" name="carpetColor" value="Sand" required />
+                <span class="choice-copy">
+                  <strong>Sand</strong>
+                </span>
+              </label>
+
+              <label class="choice-card">
+                <input type="radio" name="carpetColor" value="Shell" required />
+                <span class="choice-copy">
+                  <strong>Shell</strong>
+                </span>
+              </label>
+            </div>
+          </div>
+        </section>
+
+        <section class="section-card">
+          <div class="section-title">
+            <span class="step-number">3</span>
+            <h2>Demolition</h2>
+          </div>
+
+          <div class="demo-options">
+            <label class="choice-card">
+              <input type="checkbox" name="demo" value="LVT" />
+              <span class="choice-copy"><strong>LVT</strong></span>
+            </label>
+
+            <label class="choice-card">
+              <input type="checkbox" name="demo" value="Carpet & Pad" />
+              <span class="choice-copy"><strong>Carpet & Pad</strong></span>
+            </label>
+
+            <label class="choice-card">
+              <input type="checkbox" name="demo" value="Other" />
+              <span class="choice-copy"><strong>Other</strong></span>
+            </label>
+          </div>
+
+          <div class="field">
+            <label for="demoLocation">Location in Unit</label>
+            <textarea id="demoLocation" placeholder="List the room(s) or area(s) for demolition"></textarea>
+          </div>
+        </section>
+
+        <section class="section-card">
+          <div class="section-title">
+            <span class="step-number">4</span>
+            <h2>Installation</h2>
+          </div>
+          <p class="section-subtitle">Select the flooring type for each area.</p>
+
+          <div class="room-grid">
+            <div class="field">
+              <label for="closets">Closet(s)</label>
+              <select id="closets" class="install-location" data-location="Closet(s)">
+                <option value="">None</option>
+                <option value="LVT">LVT</option>
+                <option value="Carpet">Carpet</option>
+                <option value="Both">Both</option>
+              </select>
+            </div>
+
+            <div class="field">
+              <label for="bathrooms">Bathroom(s)</label>
+              <select id="bathrooms" class="install-location" data-location="Bathroom(s)">
+                <option value="">None</option>
+                <option value="LVT">LVT</option>
+                <option value="Carpet">Carpet</option>
+                <option value="Both">Both</option>
+              </select>
+            </div>
+
+            <div class="field">
+              <label for="livingRoom">Living Room</label>
+              <select id="livingRoom" class="install-location" data-location="Living Room">
+                <option value="">None</option>
+                <option value="LVT">LVT</option>
+                <option value="Carpet">Carpet</option>
+                <option value="Both">Both</option>
+              </select>
+            </div>
+
+            <div class="field">
+              <label for="bedrooms">Bedroom(s)</label>
+              <select id="bedrooms" class="install-location" data-location="Bedroom(s)">
+                <option value="">None</option>
+                <option value="LVT">LVT</option>
+                <option value="Carpet">Carpet</option>
+                <option value="Both">Both</option>
+              </select>
+            </div>
+
+            <div class="field">
+              <label for="kitchen">Kitchen</label>
+              <select id="kitchen" class="install-location" data-location="Kitchen">
+                <option value="">None</option>
+                <option value="LVT">LVT</option>
+                <option value="Carpet">Carpet</option>
+                <option value="Both">Both</option>
+              </select>
+            </div>
+
+            <div class="field">
+              <label for="dining">Dining</label>
+              <select id="dining" class="install-location" data-location="Dining">
+                <option value="">None</option>
+                <option value="LVT">LVT</option>
+                <option value="Carpet">Carpet</option>
+                <option value="Both">Both</option>
+              </select>
+            </div>
+
+            <div class="field">
+              <label for="laundry">Laundry</label>
+              <select id="laundry" class="install-location" data-location="Laundry">
+                <option value="">None</option>
+                <option value="LVT">LVT</option>
+                <option value="Carpet">Carpet</option>
+                <option value="Both">Both</option>
+              </select>
+            </div>
+          </div>
+        </section>
+
+        <section class="section-card">
+          <div class="section-title">
+            <span class="step-number">5</span>
+            <h2>Special Instructions</h2>
+          </div>
+
+          <div class="field">
+            <label for="specialInstructions">Notes</label>
+            <textarea id="specialInstructions" placeholder="Enter any special instructions or notes"></textarea>
+          </div>
+
+          <label class="choice-card" style="margin-top: 14px;">
+            <input type="checkbox" id="stretchOnly" />
+            <span class="choice-copy">
+              <strong>Carpet Stretch Only</strong>
+            </span>
+          </label>
+        </section>
+
+        <section class="section-card">
+          <div class="section-title">
+            <span class="step-number">6</span>
+            <h2>Photos</h2>
+          </div>
+
+          <div class="photo-grid">
+            <label class="photo-card">
+              <input id="cameraPhoto" type="file" accept="image/*" capture="environment" />
+              <span class="photo-card-content">
+                <span>📷</span>
+                Take Photo
+              </span>
+            </label>
+
+            <label class="photo-card">
+              <input id="existingPhotos" type="file" accept="image/*" multiple />
+              <span class="photo-card-content">
+                <span>🖼️</span>
+                Choose Existing Photos
+              </span>
+            </label>
+          </div>
+
+          <div id="photoStatus" class="photo-status">
+            No photos selected.
+          </div>
+        </section>
+
+        <div id="reviewCard" class="review-card">
+          <h3>Review Work Order</h3>
+          <div id="reviewContent" class="review-content"></div>
         </div>
-      </section>
-      <section class="section">
-        <h2>LVT Color</h2>
-        <div class="choice-list">
-          <label class="choice-card"><input type="radio" name="lvtColor" value="Thatch - Lighter Color" required /><span class="choice-text"><strong>Thatch</strong><span>Lighter Color</span></span></label>
-          <label class="choice-card"><input type="radio" name="lvtColor" value="Thicket - Darker Color" required /><span class="choice-text"><strong>Thicket</strong><span>Darker Color</span></span></label>
+
+        <div class="action-row">
+          <button type="button" id="reviewButton" class="btn btn-secondary">
+            Review Work Order
+          </button>
+
+          <button type="submit" class="btn btn-primary">
+            Submit Work Order
+          </button>
         </div>
-      </section>
-      <section class="section">
-        <h2>Carpet Color</h2>
-        <div class="choice-list">
-          <label class="choice-card"><input type="radio" name="carpetColor" value="Sand" required /><span class="choice-text"><strong>Sand</strong></span></label>
-          <label class="choice-card"><input type="radio" name="carpetColor" value="Shell" required /><span class="choice-text"><strong>Shell</strong></span></label>
-        </div>
-      </section>
-      <section class="section">
-        <h2>Demolition Required</h2>
-        <div class="checkbox-grid">
-          <label class="checkbox-card"><input type="checkbox" name="demo" value="LVT" />LVT</label>
-          <label class="checkbox-card"><input type="checkbox" name="demo" value="Carpet & Pad" />Carpet &amp; Pad</label>
-          <label class="checkbox-card"><input type="checkbox" name="demo" value="Other" />Other</label>
-        </div>
-        <div style="margin-top:14px"><label for="demoLocation">Location in Unit</label><textarea id="demoLocation" placeholder="List the rooms or areas"></textarea></div>
-      </section>
-      <section class="section">
-        <h2>Installation Locations</h2>
-        <div class="grid two">
-          <div><label for="closets">Closet(s)</label><select id="closets" class="install-location" data-location="Closet(s)"><option value="">None</option><option>LVT</option><option>Carpet</option><option>Both</option></select></div>
-          <div><label for="bathrooms">Bathroom(s)</label><select id="bathrooms" class="install-location" data-location="Bathroom(s)"><option value="">None</option><option>LVT</option><option>Carpet</option><option>Both</option></select></div>
-          <div><label for="livingRoom">Living Room</label><select id="livingRoom" class="install-location" data-location="Living Room"><option value="">None</option><option>LVT</option><option>Carpet</option><option>Both</option></select></div>
-          <div><label for="bedrooms">Bedroom(s)</label><select id="bedrooms" class="install-location" data-location="Bedroom(s)"><option value="">None</option><option>LVT</option><option>Carpet</option><option>Both</option></select></div>
-          <div><label for="kitchen">Kitchen</label><select id="kitchen" class="install-location" data-location="Kitchen"><option value="">None</option><option>LVT</option><option>Carpet</option><option>Both</option></select></div>
-          <div><label for="dining">Dining</label><select id="dining" class="install-location" data-location="Dining"><option value="">None</option><option>LVT</option><option>Carpet</option><option>Both</option></select></div>
-          <div><label for="laundry">Laundry</label><select id="laundry" class="install-location" data-location="Laundry"><option value="">None</option><option>LVT</option><option>Carpet</option><option>Both</option></select></div>
-        </div>
-      </section>
-      <section class="section">
-        <h2>Additional Information</h2>
-        <label class="checkbox-card" style="margin-bottom:16px"><input type="checkbox" id="stretchOnly" />Carpet Stretch Only</label>
-        <label for="specialInstructions">Special Instructions</label>
-        <textarea id="specialInstructions" placeholder="Enter any special instructions"></textarea>
-      </section>
-      <section class="section">
-        <h2>Photos</h2>
-        <div class="photo-grid">
-          <label class="photo-button">📷 Take Photo<input id="cameraPhoto" type="file" accept="image/*" capture="environment" /></label>
-          <label class="photo-button">🖼 Choose Existing Photos<input id="existingPhotos" type="file" accept="image/*" multiple /></label>
-        </div>
-        <div id="photoStatus" class="photo-status">No photos selected.</div>
-      </section>
-      <button type="submit" class="submit-btn">Submit Work Order</button>
-      <p class="note">This version opens the phone's email app with the work order completed. Selected photos must be attached manually in the email before sending.</p>
-    </form>
-    <footer>Business Flooring Specialists</footer>
+
+        <p class="footer-note">
+          The app opens the phone's email program with the completed work order.
+          Any selected photos must be attached manually before sending the email.
+        </p>
+      </form>
+    </div>
+
+    <footer>
+      Business Flooring Specialists
+    </footer>
   </main>
+
   <script>
-    const form=document.getElementById('workOrderForm');
-    const cameraPhoto=document.getElementById('cameraPhoto');
-    const existingPhotos=document.getElementById('existingPhotos');
-    const photoStatus=document.getElementById('photoStatus');
-    const successMessage=document.getElementById('successMessage');
-    function selectedRadio(name){const selected=document.querySelector(`input[name="${name}"]:checked`);return selected?selected.value:''}
-    function checkedValues(name){const values=[...document.querySelectorAll(`input[name="${name}"]:checked`)].map(item=>item.value);return values.length?values.join(', '):'None selected'}
-    function installationSelections(){const selections=[...document.querySelectorAll('.install-location')].filter(select=>select.value).map(select=>`${select.dataset.location}: ${select.value}`);return selections.length?selections.join('\n'):'None selected'}
-    function updatePhotoStatus(){const cameraCount=cameraPhoto.files.length;const existingCount=existingPhotos.files.length;const total=cameraCount+existingCount;if(total===0){photoStatus.textContent='No photos selected.';return}const lines=[];if(cameraCount>0)lines.push(`Camera photo selected: ${cameraPhoto.files[0].name}`);if(existingCount>0){const names=[...existingPhotos.files].map(file=>file.name).join(', ');lines.push(`Existing photos selected: ${names}`)}lines.push('Remember to attach the selected photos when the email opens.');photoStatus.innerHTML=lines.join('<br>')}
-    cameraPhoto.addEventListener('change',updatePhotoStatus);existingPhotos.addEventListener('change',updatePhotoStatus);
-    form.addEventListener('submit',function(event){event.preventDefault();if(!form.reportValidity())return;const unitNumber=document.getElementById('unitNumber').value;const photoCount=cameraPhoto.files.length+existingPhotos.files.length;const subject=`The Crossings Work Order - Unit ${unitNumber}`;const body=['THE CROSSINGS - CUSTOMER FLOORING WORK ORDER','',`Unit Number: ${unitNumber}`,`Unit Style: ${document.getElementById('unitStyle').value||'Not provided'}`,`Occupancy Status: ${document.getElementById('occupancy').value}`,'',`LVT Color: ${selectedRadio('lvtColor')}`,`Carpet Color: ${selectedRadio('carpetColor')}`,'',`Demolition Required: ${checkedValues('demo')}`,`Demo Location: ${document.getElementById('demoLocation').value||'Not provided'}`,'','Installation Locations:',installationSelections(),'',`Carpet Stretch Only: ${document.getElementById('stretchOnly').checked?'Yes':'No'}`,'',`Special Instructions: ${document.getElementById('specialInstructions').value||'None'}`,'',`Photos Selected: ${photoCount}`,'Please attach selected photos before sending.'].join('\n');successMessage.style.display='block';successMessage.scrollIntoView({behavior:'smooth'});window.location.href=`mailto:gregcarrillo@bfsflooring.com?subject=${encodeURIComponent(subject)}&body=${encodeURIComponent(body)}`});
+    const form = document.getElementById("workOrderForm");
+    const requestDate = document.getElementById("requestDate");
+    const cameraPhoto = document.getElementById("cameraPhoto");
+    const existingPhotos = document.getElementById("existingPhotos");
+    const photoStatus = document.getElementById("photoStatus");
+    const reviewButton = document.getElementById("reviewButton");
+    const reviewCard = document.getElementById("reviewCard");
+    const reviewContent = document.getElementById("reviewContent");
+    const statusMessage = document.getElementById("statusMessage");
+
+    const today = new Date();
+    const localDate = new Date(today.getTime() - today.getTimezoneOffset() * 60000)
+      .toISOString()
+      .split("T")[0];
+    requestDate.value = localDate;
+
+    function selectedRadio(name) {
+      const selected = document.querySelector(`input[name="${name}"]:checked`);
+      return selected ? selected.value : "";
+    }
+
+    function checkedValues(name) {
+      const values = [...document.querySelectorAll(`input[name="${name}"]:checked`)]
+        .map(item => item.value);
+
+      return values.length ? values.join(", ") : "None selected";
+    }
+
+    function installationSelections() {
+      const values = [...document.querySelectorAll(".install-location")]
+        .map(select => `${select.dataset.location}: ${select.value || "None"}`);
+
+      return values.join("\n");
+    }
+
+    function totalPhotos() {
+      return cameraPhoto.files.length + existingPhotos.files.length;
+    }
+
+    function updatePhotoStatus() {
+      const lines = [];
+
+      if (cameraPhoto.files.length) {
+        lines.push(`Camera photo: ${cameraPhoto.files[0].name}`);
+      }
+
+      if (existingPhotos.files.length) {
+        const names = [...existingPhotos.files].map(file => file.name).join(", ");
+        lines.push(`Existing photos: ${names}`);
+      }
+
+      if (!lines.length) {
+        photoStatus.textContent = "No photos selected.";
+        return;
+      }
+
+      lines.push("Remember to attach the selected photos when the email opens.");
+      photoStatus.innerHTML = lines.join("<br>");
+    }
+
+    function buildSummary() {
+      return [
+        `Unit Number: ${document.getElementById("unitNumber").value || "Not entered"}`,
+        `Unit Style: ${document.getElementById("unitStyle").value || "Not entered"}`,
+        `Request Date: ${document.getElementById("requestDate").value || "Not entered"}`,
+        `Unit Status: ${document.getElementById("occupancy").value || "Not selected"}`,
+        "",
+        `LVT Color: ${selectedRadio("lvtColor") || "Not selected"}`,
+        `Carpet Color: ${selectedRadio("carpetColor") || "Not selected"}`,
+        "",
+        `Demolition: ${checkedValues("demo")}`,
+        `Demo Location: ${document.getElementById("demoLocation").value || "Not provided"}`,
+        "",
+        "Installation Locations:",
+        installationSelections(),
+        "",
+        `Carpet Stretch Only: ${document.getElementById("stretchOnly").checked ? "Yes" : "No"}`,
+        `Special Instructions: ${document.getElementById("specialInstructions").value || "None"}`,
+        "",
+        `Photos Selected: ${totalPhotos()}`
+      ].join("\n");
+    }
+
+    cameraPhoto.addEventListener("change", updatePhotoStatus);
+    existingPhotos.addEventListener("change", updatePhotoStatus);
+
+    reviewButton.addEventListener("click", () => {
+      if (!form.reportValidity()) {
+        return;
+      }
+
+      reviewContent.textContent = buildSummary();
+      reviewCard.style.display = "block";
+      reviewCard.scrollIntoView({ behavior: "smooth", block: "start" });
+    });
+
+    form.addEventListener("submit", event => {
+      event.preventDefault();
+
+      if (!form.reportValidity()) {
+        return;
+      }
+
+      const unitNumber = document.getElementById("unitNumber").value;
+      const subject = `The Crossings Work Order - Unit ${unitNumber}`;
+
+      const body = [
+        "THE CROSSINGS - FLOORING WORK ORDER REQUEST",
+        "",
+        buildSummary(),
+        "",
+        "Please attach any selected photos before sending."
+      ].join("\n");
+
+      statusMessage.style.display = "block";
+      statusMessage.scrollIntoView({ behavior: "smooth", block: "center" });
+
+      window.location.href =
+        `mailto:gregcarrillo@bfsflooring.com?subject=${encodeURIComponent(subject)}&body=${encodeURIComponent(body)}`;
+    });
   </script>
 </body>
 </html>
